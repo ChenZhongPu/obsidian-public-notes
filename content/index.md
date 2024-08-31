@@ -1,6 +1,6 @@
 ---
-title: Welcome to Quartz
+title: Zhongpu's Public Notes
 ---
 
-This is a blank Quartz installation.
+This is my personal public notes written in Obsidian.
 See the [documentation](https://quartz.jzhao.xyz) for how to get started.
