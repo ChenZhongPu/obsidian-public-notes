@@ -1,7 +1,7 @@
 ---
 title: "Fast GitHub"
 tags:
-  - git
+  - Network
 date: 2024-04-04
 ---
 
