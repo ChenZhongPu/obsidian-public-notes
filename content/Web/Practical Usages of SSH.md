@@ -4,18 +4,18 @@ tags:
   - Network
 date: 2025-11-06
 ---
-`SSH` provides many powerful tricks. In this article, I illustrated two useful commands which I frequently used recently.
+`SSH` provides many powerful features. In this article, I demonstrate several useful commands that I frequently use in practice.
 
-## 1. How to authenticate in my server?
+## 1. How to Authenticate on a Headless Server
 
-One month ago, the Internet access in my lab requires an authentication via the username and password in the browser. However, the server is not shipped with any desktop environment.
+In my lab, Internet access requires authentication via username and password through a browser. However, the server doesn't have a desktop environment installed.
 
-### Precondition
+### Preconditions
 
-- Our client `A` is able to connect to server `B`
-- The authentication IP is `10.9.0.4` (*well it is exactly the IP used in my lab*)
+- Our client `A` can connect to server `B`
+- The authentication IP is `10.9.0.4` (*this is the actual IP used in my lab*)
 
-I want to finish the Internet authentication for `B` on `A`.
+**Goal:** Complete the Internet authentication for `B` from `A`.
 ### Solution
 
 We execute the following command on `A`:
@@ -26,9 +26,9 @@ ssh -L 8080:10.9.0.4:80 user@B
 
 > The IP address here can also be replaced by its domain name.
 
-Then, we can use `localhost:8080` in `A` to access the authentication web page.
+Then we can use `localhost:8080` on `A` to access the authentication web page.
 
-If we would like to forward the port only (*do not execute a remote command*), then we can use `-N` option:
+If we only want to forward the port without executing a remote command, we can use the `-N` option:
 
 ```
 ssh -N -L 8080:10.9.0.4:80 user@B
@@ -49,7 +49,7 @@ ssh -N -L 8080:10.9.0.4:80 user@B
 > 
 > However, an explicit bind_address may be used  tobind  the  connection  to a specific address.  The bind_address of “localhost” indicates that the listening port be bound for localuse only, while an empty address or ‘*’ indicates that the port should be available from all interfaces.
 
-Therefore, this command will **forward** the *local* `80` port to the remote (i.e., `B`)'s `10.9.0.4:80`.
+Therefore, this command will **forward** the local port `8080` to the remote host `B`'s `10.9.0.4:80`.
 
 ```mermaid
 sequenceDiagram
@@ -76,16 +76,16 @@ sequenceDiagram
 ```
 
 
-### Solution 2
+### Solution 2: Reverse Tunneling
 
-If `B` is able to connect to `A`, then we can also leverage *SSH reverse tunneling* by `-R` option.
+If `B` can connect to `A`, we can also use *SSH reverse tunneling* with the `-R` option.
 
 ```bash
 -R [bind_address:]port:host:hostport
 -R [bind_address:]port:local_socket
 -R remote_socket:host:hostport
 -R remote_socket:local_socket
-R [bind_address:]port
+-R [bind_address:]port
 ```
 
 
@@ -97,7 +97,7 @@ Therefore, we can execute the following command on `B`:
 ssh -N -R 8080:10.9.0.4:80 user@A
 ```
 
-In this way, we can also visit the authentication web page via `localhost:8080` on `A`.
+This way, we can also access the authentication web page via `localhost:8080` on `A`.
 
 
 ```mermaid
@@ -127,16 +127,16 @@ sequenceDiagram
 ```
 
 
-## 2. How to access Internet through proxies?
+## 2. How to Access the Internet Through a Proxy
 
-In China, many websites are blocked, so we have to resort to proxies. In general, our desktop computer (i.e., client `A`) has installed the proxy service via `Clash`. But it would be tedious to set up such proxy services for every remote server.
+In China, many websites are blocked, so we need to use proxies. Typically, our desktop computer (client `A`) has a proxy service installed via `Clash`. However, it would be tedious to set up such proxy services on every remote server.
 
 ### Preconditions
 
-- `A` provides the proxy services in *TNU* mode.
-- `B` can connect to `A`.
+- `A` provides proxy services in *TUN* mode
+- `B` can connect to `A`
 
-I want to use the proxy service on `B`.
+**Goal:** Use the proxy service on `B`.
 
 ### Solution
 
@@ -166,13 +166,12 @@ export HTTP_PROXY="socks5h://127.0.0.1:1080"
 export HTTPS_PROXY="socks5h://127.0.0.1:1080"
 ```
 
-The *dynamic* forwarding also works well if server `A` is located outside China. In other words, `A` is able to access the Internet freely.
+The *dynamic* forwarding also works well if server `A` is located outside China (i.e., `A` can access the Internet freely). We can verify the new IP address via `curl ipinfo.io`.
+## 3. How to View Localhost Pages Remotely
 
-## 3. How to view the localhost pages?
+This method is identical to the one described in *1. How to Authenticate on a Headless Server*. For example, suppose `B` hosts a localhost web page, such as Jupyter Notebook, and you want to view it on `A`.
 
-The method, in fact, is identical with the one in *1. How to authenticate in my server?*. For example, suppose `B` hosts a localhost web page, such as Jupyter notebook, and I want to view it on `A`.
-
-Assume the port on `B` is 8080, then:
+Assuming the port on `B` is 8000, execute:
 
 ```bash
 ssh -N -L 8080:127.0.0.1:8000 user@B
