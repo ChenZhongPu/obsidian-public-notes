@@ -2,6 +2,7 @@
 title: A += Assignment Puzzler in Python 3.12
 tags:
   - Python
+date: 2024-05-01
 ---
 
 
